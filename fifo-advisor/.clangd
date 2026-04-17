@@ -1,0 +1,5 @@
+CompileFlags:
+  Add:
+    - "-I/tools/software/xilinx/Vitis_HLS/2024.1/include"
+    - "-xc++"
+    - "-std=c++14"

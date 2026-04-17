@@ -1,0 +1,2 @@
+-e ./hls4ml
+-e ./fifo-advisor

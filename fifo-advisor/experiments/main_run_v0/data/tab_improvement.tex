@@ -1,0 +1,31 @@
+\begin{table}[th]
+\caption{Improvement of the best solution found by each optimizer over the baseline. The improvement is calculated as the ratio of the baseline modified product to the best modified product found by each optimizer. The modified product is defined as (bram + 1) * latency.}
+\label{tab:improvement}
+\begin{tabular}{lccccccc}
+\toprule
+Design Name & Sim. Annealing & Grouped Random Search & Grouped Sim. Annealing & Greedy Search & Seeded Simulated Annealing & Random Search \\
+\midrule
+Autoencoder & 1.26x & 1.42x & 1.43x & 1.15x & 1.42x & 1.21x \\
+DepthwiseSeparableConvBlock & 1.26x & 1.43x & 1.43x & 1.43x & 1.43x & 1.14x \\
+FeedForward & 1.28x & 1.42x & 1.43x & 1.41x & 1.42x & 1.23x \\
+ResidualBlock & 1.31x & 1.43x & 1.43x & 1.42x & 1.43x & 1.29x \\
+atax & 1.06x & 1.43x & 1.43x & 1.01x & 1.43x & 1.03x \\
+bicg & 1.43x & 1.43x & 1.43x & 1.43x & 1.43x & 1.43x \\
+gemm & 1.34x & 1.43x & 1.43x & 1.43x & 1.43x & 1.30x \\
+k15mmseq & 1.25x & 1.37x & 1.43x & 1.42x & 1.37x & 1.19x \\
+k15mmseq\_imbalanced & 1.32x & 1.21x & 1.43x & 1.43x & 1.21x & 0.70x \\
+k15mmseq\_relu & 1.07x & 1.35x & 1.43x & 1.42x & 1.35x & 0.72x \\
+k15mmseq\_relu\_imbalanced & 1.33x & 1.38x & 1.43x & 1.43x & 1.38x & 0.93x \\
+k15mmtree & 0.77x & 1.23x & 1.33x & 1.29x & 1.23x & 0.59x \\
+k15mmtree\_imbalanced & 1.14x & 1.43x & 1.43x & 1.43x & 1.43x & 1.11x \\
+k15mmtree\_relu & 0.91x & 1.35x & 1.43x & 1.35x & 1.35x & 0.74x \\
+k15mmtree\_relu\_imbalanced & 1.08x & 1.41x & 1.43x & 1.43x & 1.41x & 1.04x \\
+k2mm & 1.30x & 1.43x & 1.43x & 1.43x & 1.43x & 1.24x \\
+k3mm & 0.78x & 1.43x & 1.43x & 1.22x & 1.43x & 0.78x \\
+k7mmseq\_balanced & 0.62x & 1.35x & 1.43x & 1.43x & 1.35x & 0.48x \\
+k7mmseq\_unbalanced & 0.84x & 1.40x & 1.43x & 1.34x & 1.40x & 0.68x \\
+k7mmtree\_unbalanced & 1.00x & 1.29x & 1.29x & 1.18x & 1.29x & 0.77x \\
+mvt & 0.93x & 1.43x & 1.43x & 1.43x & 1.43x & 0.91x \\
+\bottomrule
+\end{tabular}
+\end{table}

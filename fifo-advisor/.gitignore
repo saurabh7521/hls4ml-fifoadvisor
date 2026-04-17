@@ -1,0 +1,15 @@
+**/__pycache__/
+.ruff_cache/
+.mypy_cache/
+.venv/
+
+.vscode/
+
+.env
+**/.env
+
+*.egg-info/
+dist/
+build/
+
+fifo_advisor_results.json

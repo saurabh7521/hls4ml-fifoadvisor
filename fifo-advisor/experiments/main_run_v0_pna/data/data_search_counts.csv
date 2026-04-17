@@ -1,0 +1,5 @@
+design_name,optimizer_name,n_total,n_no_deadlock,n_deadlock
+pna,group_random_search,5000,27,4973
+pna,heuristic,306,204,102
+pna,discrete_simulated_annealing,5000,2154,2846
+pna,grouped_discrete_simulated_annealing,5000,1888,3112

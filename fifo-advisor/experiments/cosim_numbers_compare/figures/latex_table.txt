@@ -1,0 +1,40 @@
+\begin{table*}[ht]
+\centering
+\footnotesize
+\begin{tabular}{l|c|ccccc}
+\toprule
+\multirow{2}{*}{\textbf{Design}} & \textbf{Co-Sim} & \multicolumn{5}{c}{\textbf{FIFO-Advisor}} \\
+\cmidrule{2-7}
+ & \textbf{(PAR=32)} & \textbf{Heuristic} & \textbf{Rnd.} & \textbf{Grp. Rnd.} & \textbf{SA} & \textbf{Grp. SA} \\
+\midrule
+atax & 0.61 days & 10.68 s. & 2.10 s. & 3.17 s. & 8.62 s. & 11.08 s. \\
+Autoencoder & 8.68 days & 45.39 s. & 3.40 s. & 3.83 s. & 25.60 s. & 19.66 s. \\
+bicg & 1.04 days & 0.00 s. & 0.10 s. & 0.28 s. & 0.10 s. & 0.13 s. \\
+DepthwiseSeparableConvBlock & 2.06 days & 7.33 s. & 1.76 s. & 1.31 s. & 18.48 s. & 14.82 s. \\
+FeedForward & 16.11 days & 74.20 s. & 3.94 s. & 5.17 s. & 26.01 s. & 25.58 s. \\
+gemm & 7.05 days & 0.10 s. & 0.84 s. & 0.38 s. & 4.11 s. & 6.47 s. \\
+gesummv & 0.46 days & 0.00 s. & 0.08 s. & 0.15 s. & 0.15 s. & 0.08 s. \\
+k15mmseq & 1.82 days & 6.15 s. & 0.67 s. & 0.42 s. & 3.72 s. & 3.46 s. \\
+k15mmseq\_imbalanced & 0.43 days & 0.55 s. & 0.29 s. & 0.28 s. & 1.52 s. & 1.34 s. \\
+k15mmseq\_relu & 1.33 days & 11.90 s. & 0.78 s. & 0.82 s. & 10.29 s. & 7.15 s. \\
+k15mmseq\_relu\_imbalanced & 0.37 days & 1.06 s. & 0.39 s. & 0.38 s. & 3.03 s. & 1.65 s. \\
+k15mmtree & 1.59 days & 2.35 s. & 0.48 s. & 0.42 s. & 2.32 s. & 3.04 s. \\
+k15mmtree\_imbalanced & 1.42 days & 1.98 s. & 0.41 s. & 0.49 s. & 2.56 s. & 4.09 s. \\
+k15mmtree\_relu & 1.36 days & 13.37 s. & 1.00 s. & 0.81 s. & 7.99 s. & 7.54 s. \\
+k15mmtree\_relu\_imbalanced & 1.33 days & 13.54 s. & 0.98 s. & 1.54 s. & 5.76 s. & 5.70 s. \\
+k2mm & 8.46 days & 0.88 s. & 0.79 s. & 0.62 s. & 5.44 s. & 7.24 s. \\
+k3mm & 11.79 days & 5.98 s. & 1.01 s. & 0.78 s. & 7.94 s. & 7.21 s. \\
+k7mmseq\_balanced & 1.77 days & 1.11 s. & 0.60 s. & 0.36 s. & 1.31 s. & 1.28 s. \\
+k7mmseq\_unbalanced & 2.59 days & 0.87 s. & 0.78 s. & 0.44 s. & 1.42 s. & 1.45 s. \\
+k7mmtree\_balanced & 2.00 days & 0.47 s. & 0.46 s. & 0.31 s. & 0.93 s. & 1.18 s. \\
+k7mmtree\_unbalanced & 2.23 days & 1.32 s. & 0.34 s. & 0.31 s. & 1.41 s. & 1.41 s. \\
+mvt & 1.66 days & 0.13 s. & 1.44 s. & 0.68 s. & 7.68 s. & 10.81 s. \\
+ResidualBlock & 9.41 days & 2.06 s. & 2.78 s. & 2.24 s. & 14.00 s. & 14.66 s. \\
+ResMLP & 4.94 days & 141.41 s. & 5.77 s. & 4.65 s. & 26.22 s. & 45.87 s. \\
+\midrule
+\textbf{FIFO-Advisor Speedup Geomean} & & $\bm{10^{6.53}\pmb{\times}}$ & $\bm{10^{6.88}\pmb{\times}}$ & $\bm{10^{6.91}\pmb{\times}}$ & $\bm{10^{6.20}\pmb{\times}}$ & $\bm{10^{6.19}\pmb{\times}}$ \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of Co-Simulation and FIFO Optimization runtimes for different designs.}
+\label{tab:cosim_fifo_advisor_comparison}
+\end{table*}

@@ -1,0 +1,10 @@
+name: hls4ml-fifoadvisor
+channels:
+  - conda-forge
+  - https://sharc-lab.github.io/LightningSim/repo
+dependencies:
+  - python=3.12
+  - pip
+  - lightningsim=0.2.6
+  - pip:
+      - -r requirements.txt

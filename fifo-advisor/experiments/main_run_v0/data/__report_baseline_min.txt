@@ -1,0 +1,14 @@
+=== Baseline-Min ===
+Average BRAM Increase by Optimizer (ABS):
+discrete_simulated_annealing: 97.66667
+group_random_search: 13.90476
+grouped_discrete_simulated_annealing: 3.04762
+heuristic: 67.42857
+random_search: 130.95238
+
+Average Relative Latency by Optimizer (GEO):
+discrete_simulated_annealing: 0.63253
+group_random_search: 0.53033
+grouped_discrete_simulated_annealing: 0.52884
+heuristic: 0.52893
+random_search: 0.71274
