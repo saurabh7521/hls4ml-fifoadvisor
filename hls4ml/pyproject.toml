@@ -81,6 +81,9 @@ packages = [ "hls4ml" ]
 include-package-data = true
 
 [tool.setuptools_scm]
+root = ".."
+fallback_root = ".."
+fallback_version = "0.0.0"
 version_scheme = "release-branch-semver"
 git_describe_command = [
   "git",
