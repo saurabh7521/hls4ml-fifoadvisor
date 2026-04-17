@@ -10,7 +10,10 @@ import numpy as np
 from hls4ml.model.graph import HLSConfig, ModelGraph
 from hls4ml.model.optimizer import optimize_model
 
-from .._version import version
+try:
+    from .._version import version
+except ImportError:
+    version = 'unknown version'
 
 
 def serialize_model(model, file_path):
