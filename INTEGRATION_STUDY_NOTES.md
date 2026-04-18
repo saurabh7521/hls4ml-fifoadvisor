@@ -1,6 +1,6 @@
 # hls4ml FIFOAdvisor Integration Study Notes
 
-This document explains the changes made to integrate `hls4ml` and `fifo-advisor` inside this repository. The goal is to make it easy to study the implementation file by file and understand how the final workflow behaves.
+This document explains the changes made to integrate `hls4ml` and `fifo-advisor` in this repository. The goal is to make it easy to study the implementation file by file and understand how the final workflow behaves.
 
 ## High-Level Goal
 
@@ -16,8 +16,6 @@ The solution directory used by the integration is:
 ```text
 <output_dir>/<project_name>_prj/solution1
 ```
-
-This is important: the integration targets the HLS solution directory, not Vivado accelerator `project_1` block-design directories.
 
 ## End-to-End Control Flow
 
@@ -45,7 +43,7 @@ This is FIFOAdvisor’s main CLI entry point. Before the integration, it mainly 
 fifo-advisor <solution_dir> --solver heuristic
 ```
 
-What changed:
+Implemented changes:
 
 - Added `DEFAULT_OUTPUT_PATH`.
 - Refactored the main execution logic into `run_with_args(args)`.
@@ -59,13 +57,11 @@ What changed:
 
 Why:
 
-- `hls4ml` needs a Python API, not just a shell command.
-- A Python API avoids spawning a separate CLI process just to invoke FIFOAdvisor.
 - The refactor keeps the CLI behavior and the programmatic behavior aligned by funneling both through the same execution path.
 
 Key integration idea:
 
-- `hls4ml` now calls `fifo_advisor.main.run_fifo_advisor(...)`.
+- `hls4ml` calls `fifo_advisor.main.run_fifo_advisor(...)`.
 - This means FIFOAdvisor can be driven directly from the `hls_model.build(...)` path.
 
 ### 2. [hls4ml/hls4ml/utils/fifo_advisor.py](./hls4ml/hls4ml/utils/fifo_advisor.py)
@@ -73,9 +69,9 @@ Key integration idea:
 Context:
 This is the new integration helper module on the `hls4ml` side. It acts as the bridge between `hls4ml` and `fifo-advisor`.
 
-What changed:
+Implemented changes:
 
-- Created a brand-new helper module for all FIFOAdvisor-specific logic.
+- Created a new helper module for all FIFOAdvisor-specific logic.
 - Added config key constants:
   - `FIFOAdvisor`
   - `FIFOAdvisorConfig`
@@ -100,22 +96,16 @@ Why:
 
 Important design choices:
 
-- FIFOAdvisor is currently restricted to `Backend == 'Vitis'`.
-- FIFOAdvisor is restricted to `IOType == 'io_stream'`.
-- The solution directory is derived automatically from `output_dir` and `project_name`.
+- FIFOAdvisor is currently restricted to `Backend == 'Vitis'` and  `IOType == 'io_stream'`.
 - The warning is only emitted once per model instance.
 
-Why this file matters most:
-
-- This is the core “integration brain” of the project.
-- If you want to understand how `hls4ml` knows when and how to invoke FIFOAdvisor, this is the single most important new file.
 
 ### 3. [hls4ml/hls4ml/utils/config.py](./hls4ml/hls4ml/utils/config.py)
 
 Context:
 This is where `hls4ml` creates the initial project configuration dictionary used throughout conversion and build.
 
-What changed:
+Implemented changes:
 
 - Extended `create_config(...)` with:
   - `fifo_advisor=None`
@@ -131,10 +121,6 @@ Why:
 - Once stored in the model config, the backend can still access those settings later during `build(...)`.
 - Deep-copying avoids accidental mutation of the user’s original config dictionary.
 
-Why this file matters:
-
-- This is where the user’s intent first enters the `hls4ml` object model.
-- If the settings are not captured here, the backend has nothing to read later.
 
 ### 4. [hls4ml/hls4ml/converters/__init__.py](./hls4ml/hls4ml/converters/__init__.py)
 
@@ -145,7 +131,7 @@ This file exposes the top-level conversion entry points such as:
 - `convert_from_pytorch_model(...)`
 - `convert_from_onnx_model(...)`
 
-What changed:
+Implemented changes:
 
 - Added `fifo_advisor` and `fifo_advisor_config` parameters to:
   - `convert_from_keras_model(...)`
@@ -156,7 +142,7 @@ What changed:
 
 Why:
 
-- This is what makes the user-facing API ergonomic.
+- This makes the user-facing API ergonomic.
 - The user can now write:
 
 ```python
@@ -171,16 +157,13 @@ hls_model = hls4ml.converters.convert_from_keras_model(
 
 instead of having to mutate hidden internal config objects manually.
 
-Why this file matters:
-
-- It makes FIFOAdvisor feel like a native `hls4ml` option rather than an external post-processing step.
 
 ### 5. [hls4ml/hls4ml/backends/vitis/vitis_backend.py](./hls4ml/hls4ml/backends/vitis/vitis_backend.py)
 
 Context:
 This file is the actual Vitis backend implementation. Its `build(...)` method is the exact place where Vitis HLS is launched.
 
-What changed:
+Implemented changes:
 
 - Imported:
   - `run_fifo_advisor_if_enabled`
@@ -193,22 +176,16 @@ What changed:
 
 Why:
 
-- This is the cleanest place to hook FIFOAdvisor in.
+- This is a clean place to hook FIFOAdvisor in.
 - The Vitis build is what creates the `solution1` directory that FIFOAdvisor needs.
-- Running FIFOAdvisor after the build ensures the required solution artifacts exist.
 
-Why this file matters:
-
-- This is the real execution point for the integration.
-- Everything before this file is config plumbing.
-- Everything after this file is just reporting and documentation.
 
 ### 6. [hls4ml/hls4ml/backends/vivado/vivado_backend.py](./hls4ml/hls4ml/backends/vivado/vivado_backend.py)
 
 Context:
 This is the Vivado backend implementation.
 
-What changed:
+Implemented changes:
 
 - Added the same FIFOAdvisor-related imports used in the Vitis backend.
 - Extended `build(...)` with:
@@ -219,21 +196,16 @@ What changed:
 
 Why:
 
-- This keeps the backend API shape consistent.
-- Even though FIFOAdvisor is currently restricted to Vitis in the helper logic, having the same signature in both backends avoids confusing API divergence.
-- The helper will reject non-Vitis FIFOAdvisor runs clearly and centrally.
-
-Why this file matters:
-
-- It keeps the integration behavior explicit and consistent across backends.
-- The actual enforcement of “Vitis only” is intentionally centralized in `utils/fifo_advisor.py`.
+- This keeps the backend API  consistent.
+- Even though FIFOAdvisor is currently restricted to Vitis in the helper logic, having the same signature in both backends avoids API divergence.
+- The helper will reject non-Vitis FIFOAdvisor runs centrally.
 
 ### 7. [hls4ml/hls4ml/backends/vitis/passes/fifo_depth_optimization.py](./hls4ml/hls4ml/backends/vitis/passes/fifo_depth_optimization.py)
 
 Context:
 This file implements hls4ml’s built-in Vitis FIFO depth optimization pass.
 
-What changed:
+Implemented changes:
 
 - In the internal profiling build call inside `execute_cosim_to_profile_fifos(...)`, added:
   - `fifo_advisor=False`
@@ -241,23 +213,20 @@ What changed:
 
 Why:
 
-- The built-in flow uses an internal `model.build(...)` call to do profiling.
-- If FIFOAdvisor were left enabled here, it would fire during the internal profiling build, which is not what we want.
+- The built-in flow uses an internal `model.build(...)` call to perform profiling.
+- If FIFOAdvisor were left enabled here, it would fire during the internal profiling build, which is not intended.
 - The correct behavior is:
   - internal hls4ml profiling build runs first
   - final outer build finishes
-  - FIFOAdvisor runs once at the end
+  - FIFOAdvisor runs once at the end to override FIFO optimization by vitis
 
-Why this file matters:
-
-- This is the fix that prevents recursive or premature FIFOAdvisor execution.
 
 ### 8. [hls4ml/hls4ml/backends/vivado/passes/fifo_depth_optimization.py](./hls4ml/hls4ml/backends/vivado/passes/fifo_depth_optimization.py)
 
 Context:
 This is the equivalent built-in FIFO depth optimization pass for the Vivado backend.
 
-What changed:
+Implemented changes:
 
 - In the internal `model.build(...)` call inside `get_vcd_data(...)`, added:
   - `fifo_advisor=False`
@@ -267,16 +236,12 @@ Why:
 - This mirrors the same suppression pattern used in the Vitis pass.
 - It keeps internal profiling builds from accidentally triggering FIFOAdvisor if the user enabled it.
 
-Why this file matters:
-
-- It ensures the “suppress internal profiling builds” rule is applied consistently wherever hls4ml internally calls `build(...)`.
-
 ### 9. [hls4ml/docs/advanced/fifo_depth.rst](./hls4ml/docs/advanced/fifo_depth.rst)
 
 Context:
 This is the hls4ml advanced documentation page about FIFO depth optimization.
 
-What changed:
+Implemented changes:
 
 - Added a new “FIFOAdvisor Integration” section.
 - Documented:
@@ -290,18 +255,15 @@ What changed:
 Why:
 
 - Users studying FIFO-related workflows will naturally land on this page.
-- This is the right place to explain how FIFOAdvisor differs from hls4ml’s built-in `fifo_opt` flow.
+- This is the most natural place to explain how FIFOAdvisor differs from hls4ml’s built-in `fifo_opt` flow.
 
-Why this file matters:
-
-- It documents the conceptual relationship between the two FIFO optimization mechanisms.
 
 ### 10. [hls4ml/test/pytest/test_fifo_advisor_integration.py](./hls4ml/test/pytest/test_fifo_advisor_integration.py)
 
 Context:
 This is the focused unit test file added for the new integration.
 
-What changed:
+Implemented changes:
 
 - Added tests for:
   - config storage of FIFOAdvisor settings
@@ -319,45 +281,15 @@ What changed:
 
 Why:
 
-- The test is intentionally focused on the integration logic rather than full ML framework execution.
+- The test is used to validate the integration
 - The stubs let the test run in a lighter environment without requiring the entire frontend stack during collection.
-
-Why this file matters:
-
-- It proves the integration contract at the Python level.
-- It also documents expected behavior through executable examples.
-
-### 11. [README.md](./README.md)
-
-Context:
-This is the root README for the combined workspace.
-
-What changed:
-
-- Added the root-level explanation that this workspace packages `hls4ml` and `fifo-advisor` together.
-- Added a one-environment setup example.
-- Added example usage for:
-  - default FIFOAdvisor invocation
-  - custom FIFOAdvisor settings
-- Documented the exact solution directory used.
-- Clarified that Vivado accelerator `project_1` is not the target.
-- Documented the interaction with hls4ml built-in FIFO optimization.
-
-Why:
-
-- The root README is the first entry point for someone cloning this integration workspace.
-- It now explains the intended user experience directly from the top-level repo.
-
-Why this file matters:
-
-- It defines the external “story” of the integration for users.
 
 ### 12. [environment.yml](./environment.yml)
 
 Context:
 This is the root Conda environment definition for the integrated workspace.
 
-What changed:
+Implemented changes:
 
 - Created a single root environment file.
 - Named the environment:
@@ -370,38 +302,14 @@ What changed:
 
 Why:
 
-- This is what gives the workspace a single shared environment identity.
-- `lightningsim` must be available because FIFOAdvisor depends on it for fast HLS trace analysis.
-
-Why this file matters:
-
-- This is the foundation of the “one environment” install story.
-
-### 13. [requirements.txt](./requirements.txt)
-
-Context:
-This is the root pip requirements file for the combined workspace.
-
-What changed:
-
-- Created a root requirements file that installs:
-  - `-e ./hls4ml`
-  - `-e ./fifo-advisor`
-
-Why:
-
-- Editable installs are a good fit for active development because both packages are part of the same working tree.
-- This lets one environment expose both projects at once.
-
-Why this file matters:
-
-- This is the foundation of the “one requirements file” install story.
+- This is what gives the workspace a single shared environment.
+- `lightningsim` must be available since FIFOAdvisor depends on it for fast HLS trace analysis.
 
 ## Design Decisions and Rationale
 
 ### Why use a Python API for FIFOAdvisor instead of invoking the CLI with subprocess?
 
-- A Python API is cleaner and easier to validate.
+- A Python API is easier to validate.
 - It avoids shell quoting and subprocess management.
 - It makes it easier to return structured data directly.
 
@@ -410,10 +318,9 @@ Why this file matters:
 - The user sets options at conversion time, but execution happens at build time.
 - The model config is the natural bridge between those two phases.
 
-### Why only support Vitis right now?
+### Why only support Vitis?
 
 - FIFOAdvisor is built around Vitis HLS solution structure and LightningSim’s expectations.
-- Restricting support early avoids silent misuse on incompatible backends.
 
 ### Why suppress FIFOAdvisor during internal profiling builds instead of disabling hls4ml FIFO optimization entirely?
 
@@ -425,7 +332,6 @@ Why this file matters:
 
 ### Why emit a warning when both are enabled?
 
-- The combined behavior is valid, but not obvious.
 - The warning tells the user exactly what order of operations will happen.
 
 ## What the Integration Does Not Yet Do
@@ -443,7 +349,7 @@ It does not yet:
 - rewrite selected FIFO depths back into the `hls4ml` project
 - rebuild the project using a chosen FIFOAdvisor result
 
-That would be the next stage if you want a fully closed-loop optimization flow.
+That would be the next stage if a fully closed-loop optimization flow is needed.
 
 ## Verification Performed
 
@@ -467,7 +373,7 @@ The integration is built around three ideas:
 2. Resolve and invoke FIFOAdvisor automatically at Vitis build time.
 3. Prevent FIFOAdvisor from firing during hls4ml’s internal FIFO profiling builds.
 
-If you want to trace the implementation in the shortest possible path, study these files first:
+For a more in depth study, start with studying the following files:
 
 1. [hls4ml/hls4ml/utils/fifo_advisor.py](./hls4ml/hls4ml/utils/fifo_advisor.py)
 2. [hls4ml/hls4ml/backends/vitis/vitis_backend.py](./hls4ml/hls4ml/backends/vitis/vitis_backend.py)
