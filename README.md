@@ -64,5 +64,5 @@ hls_model = hls4ml.converters.convert_from_keras_model(
 
 When enabled, the build report gets a `FIFOAdvisorReport` summary and the full optimizer results are written to JSON.
 
-If you also enable hls4ml's built-in FIFO depth optimization flow, its internal profiling builds will not trigger
+If both hls4ml's built-in FIFO depth optimization flow and FIFOAdvisor are enabled, hls4ml's internal profiling builds will not trigger
 FIFOAdvisor. FIFOAdvisor runs only once at the end of the final outer build.
